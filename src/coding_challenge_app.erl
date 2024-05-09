@@ -7,13 +7,7 @@
 -export([start/2, stop/1]).
 
 start(_StartType, _StartArgs) ->
-  case coding_challenge_sup:start_link() of
-    {ok, _Pid} ->
-      ok = start_http(),
-      {ok, _Pid};
-    {error, Reason} ->
-      {error, Reason}
-  end.
+  start_http().
 
 stop(_State) ->
   ok.
@@ -37,6 +31,5 @@ start_http() ->
       #{
         env => #{dispatch => Dispatch}
       }
-    ),
-  ok.
+    ).
 
