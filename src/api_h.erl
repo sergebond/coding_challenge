@@ -13,6 +13,9 @@ init(Req0, Opts) ->
       {ok, Result} ->
         RespBody = response_ok(Result),
         cowboy_req:reply(200, ?DEFAULT_RESP_HEADER, RespBody, Req1);
+      {error, Result} ->
+        RespBody = response_error(Result),
+        cowboy_req:reply(400, ?DEFAULT_RESP_HEADER, RespBody, Req1);
       {error, Code, Result} ->
         RespBody = response_error(Result),
         cowboy_req:reply(Code, ?DEFAULT_RESP_HEADER, RespBody, Req1);
@@ -34,9 +37,10 @@ response_ok(Result) when is_binary(Result) -> Result;
 
 response_ok(Result0) ->
   jsx:encode([{<<"status">>, <<"ok">>} | Result0]).
+response_error(Result) when is_list(Result) ->
+  jsx:encode([{<<"status">>, <<"error">>} | Result]);
 response_error(Result) ->
-  jsx:encode([{<<"status">>, <<"error">>} | Result]).
-
+  jsx:encode([{<<"status">>, <<"error">>},{<<"description">>,  Result}]).
 
 get_timestamp_in_millisec() ->
   {Mega, Sec, Micro} = os:timestamp(),
